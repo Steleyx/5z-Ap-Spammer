@@ -68,15 +68,21 @@ panelText.Text = "Clique sur un joueur"
 local function sendChatCommand(target)
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
+	local msg3 = ":tiny " .. target.Name
 
 	channel:SendAsync(msg1)
 	task.wait(0.5)
+
 	channel:SendAsync(msg2)
+	task.wait(0.5)
+
+	channel:SendAsync(msg3)
 
 	panelText.Text =
 		"Envoyé :\n" ..
 		msg1 .. "\n" ..
-		msg2
+		msg2 .. "\n" ..
+		msg3
 end
 
 -- BOUTON JOUEUR
@@ -106,4 +112,3 @@ for _, plr in ipairs(Players:GetPlayers()) do
 end
 
 Players.PlayerAdded:Connect(addPlayer)
-
