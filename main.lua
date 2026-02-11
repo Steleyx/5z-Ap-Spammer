@@ -4,10 +4,7 @@ local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
 
--- ===== CHAT CHANNEL =====
 local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
-
--- ===== STOCKAGE BOUTONS (anti-duplication) =====
 local playerButtons = {}
 
 -- GUI
@@ -29,7 +26,6 @@ stroke.Thickness = 2
 stroke.Color = Color3.fromRGB(120, 80, 255)
 stroke.Transparency = 0.2
 
--- TITRE
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundTransparency = 1
@@ -38,7 +34,6 @@ title.TextColor3 = Color3.fromRGB(200, 180, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 28
 
--- LISTE JOUEURS
 local list = Instance.new("ScrollingFrame", main)
 list.Position = UDim2.new(0.05, 0, 0.18, 0)
 list.Size = UDim2.new(0.4, 0, 0.75, 0)
@@ -54,7 +49,6 @@ layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	list.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
 end)
 
--- PANEL ACTION
 local panel = Instance.new("Frame", main)
 panel.Position = UDim2.new(0.5, 0, 0.25, 0)
 panel.Size = UDim2.new(0.45, 0, 0.6, 0)
@@ -71,18 +65,16 @@ panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
 
--- ===== ENVOI CHAT (ordre garanti, délai minimal) =====
+-- ===== ENVOI CHAT (ordre garanti) =====
 local function sendChatCommand(target)
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
-	local msg3 = ":tiny " .. target.Name
+	local msg3 = ":jumpscare " .. target.Name
 
 	channel:SendAsync(msg1)
-	task.wait() -- 1 frame (~0.016s)
-
+	task.wait()
 	channel:SendAsync(msg2)
-	task.wait() -- 1 frame
-
+	task.wait()
 	channel:SendAsync(msg3)
 
 	panelText.Text =
@@ -90,6 +82,26 @@ local function sendChatCommand(target)
 		msg1 .. "\n" ..
 		msg2 .. "\n" ..
 		msg3
+end
+
+-- ===== UPDATE COULEURS =====
+local function updateButtonColors()
+	local playerCount = #Players:GetPlayers()
+
+	for plr, btn in pairs(playerButtons) do
+		if plr == player then
+			-- Notre bouton = vert
+			btn.BackgroundColor3 = Color3.fromRGB(40, 170, 90)
+		else
+			if playerCount == 2 then
+				-- Si seulement 2 joueurs → l'autre est rouge
+				btn.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
+			else
+				-- Couleur normale sinon
+				btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+			end
+		end
+	end
 end
 
 -- ===== AJOUT JOUEUR =====
@@ -102,7 +114,6 @@ local function addPlayer(plr)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 18
 	btn.TextColor3 = Color3.new(1,1,1)
-	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
 	btn.Parent = list
 
@@ -111,6 +122,7 @@ local function addPlayer(plr)
 	end)
 
 	playerButtons[plr] = btn
+	updateButtonColors()
 end
 
 -- ===== SUPPRESSION JOUEUR =====
@@ -119,6 +131,7 @@ local function removePlayer(plr)
 		playerButtons[plr]:Destroy()
 		playerButtons[plr] = nil
 	end
+	updateButtonColors()
 end
 
 -- INIT
