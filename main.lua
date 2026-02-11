@@ -71,15 +71,18 @@ panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
 
--- ===== ENVOI CHAT INSTANT =====
+-- ===== ENVOI CHAT (ordre garanti, délai minimal) =====
 local function sendChatCommand(target)
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
 	local msg3 = ":tiny " .. target.Name
 
-	-- Envoi instantané dans l'ordre (pas de wait)
 	channel:SendAsync(msg1)
+	task.wait() -- 1 frame (~0.016s)
+
 	channel:SendAsync(msg2)
+	task.wait() -- 1 frame
+
 	channel:SendAsync(msg3)
 
 	panelText.Text =
@@ -91,7 +94,7 @@ end
 
 -- ===== AJOUT JOUEUR =====
 local function addPlayer(plr)
-	if playerButtons[plr] then return end -- évite doublon
+	if playerButtons[plr] then return end
 
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, -10, 0, 40)
