@@ -2,8 +2,9 @@
 
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
-local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 
+local player = Players.LocalPlayer
 local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
 local playerButtons = {}
 
@@ -34,7 +35,7 @@ title.TextColor3 = Color3.fromRGB(200, 180, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 28
 
--- ===== BOUTON FERMER (CROIX) =====
+-- ===== BOUTON FERMER =====
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 35, 0, 35)
 closeButton.Position = UDim2.new(1, -45, 0, 8)
@@ -49,6 +50,18 @@ Instance.new("UICorner", closeButton).CornerRadius = UDim.new(1, 0)
 closeButton.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
+
+-- ===== INDICATEUR KEYBIND G =====
+local keybindIndicator = Instance.new("TextLabel")
+keybindIndicator.Size = UDim2.new(0, 90, 0, 25)
+keybindIndicator.Position = UDim2.new(1, -140, 0, 15)
+keybindIndicator.Text = "KEYBIND : G"
+keybindIndicator.Font = Enum.Font.GothamBold
+keybindIndicator.TextSize = 14
+keybindIndicator.TextColor3 = Color3.new(1,1,1)
+keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
+keybindIndicator.Parent = main
+Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
 
 -- LISTE JOUEURS
 local list = Instance.new("ScrollingFrame", main)
@@ -82,7 +95,7 @@ panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
 
--- ===== ENVOI CHAT (ordre garanti) =====
+-- ===== ENVOI CHAT =====
 local function sendChatCommand(target)
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
@@ -101,6 +114,19 @@ local function sendChatCommand(target)
 		msg3
 end
 
+-- ===== RÉCUPÉRER AUTRE JOUEUR =====
+local function getOtherPlayer()
+	local players = Players:GetPlayers()
+	if #players == 2 then
+		for _, plr in ipairs(players) do
+			if plr ~= player then
+				return plr
+			end
+		end
+	end
+	return nil
+end
+
 -- ===== UPDATE COULEURS =====
 local function updateButtonColors()
 	local playerCount = #Players:GetPlayers()
@@ -115,6 +141,13 @@ local function updateButtonColors()
 				btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
 			end
 		end
+	end
+
+	-- Update indicateur G
+	if playerCount == 2 then
+		keybindIndicator.BackgroundColor3 = Color3.fromRGB(40, 170, 90)
+	else
+		keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
 	end
 end
 
@@ -148,6 +181,18 @@ local function removePlayer(plr)
 	updateButtonColors()
 end
 
+-- ===== KEYBIND G =====
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+
+	if input.KeyCode == Enum.KeyCode.G then
+		local target = getOtherPlayer()
+		if target then
+			sendChatCommand(target)
+		end
+	end
+end)
+
 -- INIT
 for _, plr in ipairs(Players:GetPlayers()) do
 	addPlayer(plr)
@@ -155,3 +200,5 @@ end
 
 Players.PlayerAdded:Connect(addPlayer)
 Players.PlayerRemoving:Connect(removePlayer)
+
+updateButtonColors()
