@@ -34,6 +34,23 @@ title.TextColor3 = Color3.fromRGB(200, 180, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 28
 
+-- ===== BOUTON FERMER (CROIX) =====
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 35, 0, 35)
+closeButton.Position = UDim2.new(1, -45, 0, 8)
+closeButton.Text = "✕"
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 20
+closeButton.TextColor3 = Color3.new(1,1,1)
+closeButton.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
+closeButton.Parent = main
+Instance.new("UICorner", closeButton).CornerRadius = UDim.new(1, 0)
+
+closeButton.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+-- LISTE JOUEURS
 local list = Instance.new("ScrollingFrame", main)
 list.Position = UDim2.new(0.05, 0, 0.18, 0)
 list.Size = UDim2.new(0.4, 0, 0.75, 0)
@@ -90,14 +107,11 @@ local function updateButtonColors()
 
 	for plr, btn in pairs(playerButtons) do
 		if plr == player then
-			-- Notre bouton = vert
 			btn.BackgroundColor3 = Color3.fromRGB(40, 170, 90)
 		else
 			if playerCount == 2 then
-				-- Si seulement 2 joueurs → l'autre est rouge
 				btn.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
 			else
-				-- Couleur normale sinon
 				btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
 			end
 		end
