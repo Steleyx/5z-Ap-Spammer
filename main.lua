@@ -7,6 +7,9 @@ local player = Players.LocalPlayer
 -- ===== CHAT CHANNEL =====
 local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
 
+-- ===== STOCKAGE BOUTONS (anti-duplication) =====
+local playerButtons = {}
+
 -- GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "5zHub"
@@ -47,6 +50,10 @@ Instance.new("UICorner", list).CornerRadius = UDim.new(0, 12)
 local layout = Instance.new("UIListLayout", list)
 layout.Padding = UDim.new(0, 8)
 
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	list.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+end)
+
 -- PANEL ACTION
 local panel = Instance.new("Frame", main)
 panel.Position = UDim2.new(0.5, 0, 0.25, 0)
@@ -64,18 +71,15 @@ panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
 
--- ===== ENVOI CHAT =====
+-- ===== ENVOI CHAT INSTANT =====
 local function sendChatCommand(target)
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
 	local msg3 = ":tiny " .. target.Name
 
+	-- Envoi instantané dans l'ordre (pas de wait)
 	channel:SendAsync(msg1)
-	task.wait(0.5)
-
 	channel:SendAsync(msg2)
-	task.wait(0.5)
-
 	channel:SendAsync(msg3)
 
 	panelText.Text =
@@ -85,8 +89,10 @@ local function sendChatCommand(target)
 		msg3
 end
 
--- BOUTON JOUEUR
+-- ===== AJOUT JOUEUR =====
 local function addPlayer(plr)
+	if playerButtons[plr] then return end -- évite doublon
+
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, -10, 0, 40)
 	btn.Text = plr.Name
@@ -101,9 +107,15 @@ local function addPlayer(plr)
 		sendChatCommand(plr)
 	end)
 
-	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		list.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
-	end)
+	playerButtons[plr] = btn
+end
+
+-- ===== SUPPRESSION JOUEUR =====
+local function removePlayer(plr)
+	if playerButtons[plr] then
+		playerButtons[plr]:Destroy()
+		playerButtons[plr] = nil
+	end
 end
 
 -- INIT
@@ -112,3 +124,4 @@ for _, plr in ipairs(Players:GetPlayers()) do
 end
 
 Players.PlayerAdded:Connect(addPlayer)
+Players.PlayerRemoving:Connect(removePlayer)
