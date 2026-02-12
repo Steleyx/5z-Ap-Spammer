@@ -12,6 +12,10 @@ local playerButtons = {}
 -- 🔥 AJOUT POUR BLOQUER APRÈS DESTROY
 local destroyed = false
 
+-- 🔥 COOLDOWN SYSTEM
+local cooldownActive = false
+local cooldownTime = 3
+
 -- GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "5zHub"
@@ -39,7 +43,7 @@ title.TextColor3 = Color3.fromRGB(200, 180, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 28
 
--- ===== BOUTON FERMER (DESTROY TOTAL) =====
+-- ===== BOUTON FERMER =====
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 35, 0, 35)
 closeButton.Position = UDim2.new(1, -45, 0, 8)
@@ -56,7 +60,7 @@ closeButton.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
--- ===== BOUTON HIDE (GAUCHE) =====
+-- ===== BOUTON HIDE =====
 local hideButton = Instance.new("TextButton")
 hideButton.Size = UDim2.new(0, 35, 0, 35)
 hideButton.Position = UDim2.new(0, 10, 0, 8)
@@ -84,11 +88,24 @@ layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 	list.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
 end)
 
+-- PANEL DROITE
 local panel = Instance.new("Frame", main)
 panel.Position = UDim2.new(0.5, 0, 0.25, 0)
 panel.Size = UDim2.new(0.45, 0, 0.6, 0)
 panel.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
 Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 14)
+
+-- 🔥 COOLDOWN LABEL (HAUT PANEL DROITE)
+local cooldownLabel = Instance.new("TextLabel")
+cooldownLabel.Size = UDim2.new(1, -10, 0, 30)
+cooldownLabel.Position = UDim2.new(0, 5, 0, 5)
+cooldownLabel.BackgroundTransparency = 1
+cooldownLabel.Text = "⚠️COOLDOWN⚠️"
+cooldownLabel.TextColor3 = Color3.fromRGB(255, 60, 60)
+cooldownLabel.Font = Enum.Font.GothamBlack
+cooldownLabel.TextSize = 18
+cooldownLabel.Visible = false
+cooldownLabel.Parent = panel
 
 local panelText = Instance.new("TextLabel", panel)
 panelText.Size = UDim2.new(1, -10, 1, -10)
@@ -124,7 +141,7 @@ end
 
 notify()
 
--- HIDE / SHOW SYSTEM
+-- HIDE / SHOW
 local menuVisible = true
 
 local function toggleMenu()
@@ -139,9 +156,13 @@ end
 
 hideButton.MouseButton1Click:Connect(toggleMenu)
 
--- ENVOI CHAT
+-- ENVOI CHAT + COOLDOWN
 local function sendChatCommand(target)
 	if destroyed then return end
+	if cooldownActive then return end
+	
+	cooldownActive = true
+	cooldownLabel.Visible = true
 
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
@@ -158,6 +179,13 @@ local function sendChatCommand(target)
 		msg1 .. "\n" ..
 		msg2 .. "\n" ..
 		msg3
+
+	task.delay(cooldownTime, function()
+		cooldownActive = false
+		if not destroyed then
+			cooldownLabel.Visible = false
+		end
+	end)
 end
 
 local function getOtherPlayer()
@@ -225,7 +253,7 @@ end
 -- KEYBINDS
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
-	if destroyed then return end -- 🔥 BLOQUE TOUT SI DESTROY
+	if destroyed then return end
 
 	if input.KeyCode == Enum.KeyCode.G then
 		local target = getOtherPlayer()
