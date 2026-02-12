@@ -51,18 +51,6 @@ closeButton.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
--- ===== INDICATEUR KEYBIND G =====
-local keybindIndicator = Instance.new("TextLabel")
-keybindIndicator.Size = UDim2.new(0, 90, 0, 25)
-keybindIndicator.Position = UDim2.new(1, -140, 0, 15)
-keybindIndicator.Text = "KEYBIND : G"
-keybindIndicator.Font = Enum.Font.GothamBold
-keybindIndicator.TextSize = 14
-keybindIndicator.TextColor3 = Color3.new(1,1,1)
-keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
-keybindIndicator.Parent = main
-Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
-
 -- LISTE JOUEURS
 local list = Instance.new("ScrollingFrame", main)
 list.Position = UDim2.new(0.05, 0, 0.18, 0)
@@ -94,6 +82,18 @@ panelText.TextColor3 = Color3.fromRGB(230,230,230)
 panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
+
+-- ===== INDICATEUR KEYBIND G (PLACÉ SOUS LE PANEL DROIT) =====
+local keybindIndicator = Instance.new("TextLabel")
+keybindIndicator.Size = UDim2.new(0.45, 0, 0, 28) -- même largeur que le panel
+keybindIndicator.Position = UDim2.new(0.5, 0, 0.88, 0) -- en bas du menu, aligné à droite
+keybindIndicator.Text = "KEYBIND : G"
+keybindIndicator.Font = Enum.Font.GothamBold
+keybindIndicator.TextSize = 14
+keybindIndicator.TextColor3 = Color3.new(1,1,1)
+keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
+keybindIndicator.Parent = main
+Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
 
 -- ===== ENVOI CHAT =====
 local function sendChatCommand(target)
@@ -143,7 +143,6 @@ local function updateButtonColors()
 		end
 	end
 
-	-- Update indicateur G
 	if playerCount == 2 then
 		keybindIndicator.BackgroundColor3 = Color3.fromRGB(40, 170, 90)
 	else
@@ -172,7 +171,6 @@ local function addPlayer(plr)
 	updateButtonColors()
 end
 
--- ===== SUPPRESSION JOUEUR =====
 local function removePlayer(plr)
 	if playerButtons[plr] then
 		playerButtons[plr]:Destroy()
@@ -181,7 +179,6 @@ local function removePlayer(plr)
 	updateButtonColors()
 end
 
--- ===== KEYBIND G =====
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 
@@ -193,7 +190,6 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
--- INIT
 for _, plr in ipairs(Players:GetPlayers()) do
 	addPlayer(plr)
 end
