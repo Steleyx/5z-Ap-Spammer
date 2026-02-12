@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
 local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
@@ -35,7 +36,7 @@ title.TextColor3 = Color3.fromRGB(200, 180, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 28
 
--- ===== BOUTON FERMER =====
+-- ===== BOUTON FERMER (DESTROY TOTAL) =====
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 35, 0, 35)
 closeButton.Position = UDim2.new(1, -45, 0, 8)
@@ -50,6 +51,18 @@ Instance.new("UICorner", closeButton).CornerRadius = UDim.new(1, 0)
 closeButton.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
+
+-- ===== BOUTON HIDE (GAUCHE) =====
+local hideButton = Instance.new("TextButton")
+hideButton.Size = UDim2.new(0, 35, 0, 35)
+hideButton.Position = UDim2.new(0, 10, 0, 8)
+hideButton.Text = "-"
+hideButton.Font = Enum.Font.GothamBold
+hideButton.TextSize = 22
+hideButton.TextColor3 = Color3.new(1,1,1)
+hideButton.BackgroundColor3 = Color3.fromRGB(60, 60, 170)
+hideButton.Parent = main
+Instance.new("UICorner", hideButton).CornerRadius = UDim.new(1, 0)
 
 -- LISTE JOUEURS
 local list = Instance.new("ScrollingFrame", main)
@@ -83,17 +96,42 @@ panelText.Font = Enum.Font.GothamBold
 panelText.TextSize = 20
 panelText.Text = "Clique sur un joueur"
 
--- ===== INDICATEUR KEYBIND G (PLACÉ SOUS LE PANEL DROIT) =====
+-- KEYBIND INDICATOR
 local keybindIndicator = Instance.new("TextLabel")
-keybindIndicator.Size = UDim2.new(0.45, 0, 0, 28) -- même largeur que le panel
-keybindIndicator.Position = UDim2.new(0.5, 0, 0.88, 0) -- en bas du menu, aligné à droite
-keybindIndicator.Text = "KEYBIND : G"
+keybindIndicator.Size = UDim2.new(0.45, 0, 0, 28)
+keybindIndicator.Position = UDim2.new(0.5, 0, 0.88, 0)
+keybindIndicator.Text = "KEYBIND : G | MENU : K"
 keybindIndicator.Font = Enum.Font.GothamBold
 keybindIndicator.TextSize = 14
 keybindIndicator.TextColor3 = Color3.new(1,1,1)
 keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
 keybindIndicator.Parent = main
 Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
+
+-- ===== NOTIFICATION =====
+local function notify()
+	StarterGui:SetCore("SendNotification", {
+		Title = "5z AP-Spammer",
+		Text = "Appuie sur 'K' pour afficher le menu",
+		Duration = 5
+	})
+end
+
+notify()
+
+-- ===== HIDE / SHOW SYSTEM =====
+local menuVisible = true
+
+local function toggleMenu()
+	menuVisible = not menuVisible
+	main.Visible = menuVisible
+	
+	if not menuVisible then
+		notify()
+	end
+end
+
+hideButton.MouseButton1Click:Connect(toggleMenu)
 
 -- ===== ENVOI CHAT =====
 local function sendChatCommand(target)
@@ -114,7 +152,6 @@ local function sendChatCommand(target)
 		msg3
 end
 
--- ===== RÉCUPÉRER AUTRE JOUEUR =====
 local function getOtherPlayer()
 	local players = Players:GetPlayers()
 	if #players == 2 then
@@ -127,7 +164,6 @@ local function getOtherPlayer()
 	return nil
 end
 
--- ===== UPDATE COULEURS =====
 local function updateButtonColors()
 	local playerCount = #Players:GetPlayers()
 
@@ -150,7 +186,6 @@ local function updateButtonColors()
 	end
 end
 
--- ===== AJOUT JOUEUR =====
 local function addPlayer(plr)
 	if playerButtons[plr] then return end
 
@@ -179,6 +214,7 @@ local function removePlayer(plr)
 	updateButtonColors()
 end
 
+-- KEYBINDS
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 
@@ -187,6 +223,10 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		if target then
 			sendChatCommand(target)
 		end
+	end
+	
+	if input.KeyCode == Enum.KeyCode.K then
+		toggleMenu()
 	end
 end)
 
