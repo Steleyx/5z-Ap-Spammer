@@ -100,7 +100,7 @@ panelText.Text = "Clique sur un joueur"
 local keybindIndicator = Instance.new("TextLabel")
 keybindIndicator.Size = UDim2.new(0.45, 0, 0, 28)
 keybindIndicator.Position = UDim2.new(0.5, 0, 0.88, 0)
-keybindIndicator.Text = "KEYBIND : G | MENU : K"
+keybindIndicator.Text = "KEYBIND : G"
 keybindIndicator.Font = Enum.Font.GothamBold
 keybindIndicator.TextSize = 14
 keybindIndicator.TextColor3 = Color3.new(1,1,1)
@@ -113,7 +113,7 @@ local function notify()
 	StarterGui:SetCore("SendNotification", {
 		Title = "5z AP-Spammer",
 		Text = "Appuie sur 'K' pour afficher le menu",
-		Duration = 5
+		Duration = 4
 	})
 end
 
