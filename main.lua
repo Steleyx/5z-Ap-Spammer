@@ -9,6 +9,9 @@ local player = Players.LocalPlayer
 local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
 local playerButtons = {}
 
+-- 🔥 AJOUT POUR BLOQUER APRÈS DESTROY
+local destroyed = false
+
 -- GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "5zHub"
@@ -49,6 +52,7 @@ closeButton.Parent = main
 Instance.new("UICorner", closeButton).CornerRadius = UDim.new(1, 0)
 
 closeButton.MouseButton1Click:Connect(function()
+	destroyed = true
 	gui:Destroy()
 end)
 
@@ -108,8 +112,9 @@ keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
 keybindIndicator.Parent = main
 Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
 
--- ===== NOTIFICATION =====
+-- NOTIFICATION
 local function notify()
+	if destroyed then return end
 	StarterGui:SetCore("SendNotification", {
 		Title = "5z AP-Spammer",
 		Text = "Appuie sur 'K' pour afficher le menu",
@@ -119,10 +124,11 @@ end
 
 notify()
 
--- ===== HIDE / SHOW SYSTEM =====
+-- HIDE / SHOW SYSTEM
 local menuVisible = true
 
 local function toggleMenu()
+	if destroyed then return end
 	menuVisible = not menuVisible
 	main.Visible = menuVisible
 	
@@ -133,8 +139,10 @@ end
 
 hideButton.MouseButton1Click:Connect(toggleMenu)
 
--- ===== ENVOI CHAT =====
+-- ENVOI CHAT
 local function sendChatCommand(target)
+	if destroyed then return end
+
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
 	local msg3 = ":jumpscare " .. target.Name
@@ -217,6 +225,7 @@ end
 -- KEYBINDS
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
+	if destroyed then return end -- 🔥 BLOQUE TOUT SI DESTROY
 
 	if input.KeyCode == Enum.KeyCode.G then
 		local target = getOtherPlayer()
