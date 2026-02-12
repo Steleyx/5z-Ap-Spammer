@@ -129,6 +129,18 @@ keybindIndicator.BackgroundColor3 = Color3.fromRGB(170, 60, 60)
 keybindIndicator.Parent = main
 Instance.new("UICorner", keybindIndicator).CornerRadius = UDim.new(0, 8)
 
+-- HIDE / UNHIDE INDICATOR
+local hideIndicator = Instance.new("TextLabel")
+hideIndicator.Size = UDim2.new(0.45, 0, 0, 20) -- réduit la hauteur
+hideIndicator.Position = UDim2.new(0.5, 0, 0.18, 0) -- remonte un peu
+hideIndicator.Text = "HIDE / UNHIDE = K"
+hideIndicator.Font = Enum.Font.GothamBold
+hideIndicator.TextSize = 12 -- texte plus petit
+hideIndicator.TextColor3 = Color3.new(1,1,1) -- blanc
+hideIndicator.BackgroundTransparency = 1 -- pas de fond
+hideIndicator.Parent = main
+hideIndicator.TextScaled = false -- fixe la taille pour garder 12
+
 -- NOTIFICATION
 local function notify()
 	if destroyed then return end
