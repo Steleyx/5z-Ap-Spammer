@@ -14,7 +14,7 @@ local destroyed = false
 
 -- 🔥 COOLDOWN SYSTEM
 local cooldownActive = false
-local cooldownTime = 3
+local cooldownTime = 120
 
 -- GUI
 local gui = Instance.new("ScreenGui")
