@@ -171,10 +171,19 @@ hideButton.MouseButton1Click:Connect(toggleMenu)
 -- ENVOI CHAT + COOLDOWN
 local function sendChatCommand(target)
 	if destroyed then return end
-	if cooldownActive then return end
 	
-	cooldownActive = true
-	cooldownLabel.Visible = true
+	-- On laisse exécuter même si cooldown actif
+	if not cooldownActive then
+		cooldownActive = true
+		cooldownLabel.Visible = true
+
+		task.delay(cooldownTime, function()
+			cooldownActive = false
+			if not destroyed then
+				cooldownLabel.Visible = false
+			end
+		end)
+	end
 
 	local msg1 = ":balloon " .. target.Name
 	local msg2 = ":rocket " .. target.Name
